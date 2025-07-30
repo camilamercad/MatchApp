@@ -5,6 +5,7 @@ export class Proyecto{
         public Usuario: string,
         public DescripcionDetallada?: string,
         public FechaCreacion?: Date,
-        public IdCategoria?: number
+        public IdCategoria?: number,
+        public Imagen?: string
     ) {}
 }

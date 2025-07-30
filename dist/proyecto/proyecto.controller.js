@@ -13,13 +13,18 @@ export class ProyectoController {
         if (!input.usuario) {
             throw new Error("Usuario es un campo obligatorio");
         }
-        const proyecto = new Proyecto(input.titulo, input.descripcion, input.usuario, input?.descripcionDetallada, input?.idCategoria);
+        const proyecto = new Proyecto(input.titulo, input.descripcion, input.usuario, input?.descripcionDetallada, undefined, input?.idCategoria, input?.imagen);
         await proyectoRepository.Add(proyecto);
         return res.status(201).send();
     }
     async GetAll(req, res) {
-        const { titulo, descripcion, usuario, idCategoria } = req.query;
-        const proyectos = await proyectoRepository.GetAll(titulo, descripcion, usuario, idCategoria);
+        for (const key of Object.keys(req.query)) {
+            if (key !== "titulo" && key !== "descripcion" && key !== "usuario" && key !== "idCategoria" && key !== "ordenarPorFecha") {
+                throw new Error(`El campo '${key}' no es válido para la búsqueda`);
+            }
+        }
+        const { titulo, descripcion, usuario, idCategoria, ordenarPorFecha } = req.query;
+        const proyectos = await proyectoRepository.GetAll(titulo, descripcion, usuario, idCategoria, ordenarPorFecha);
         return res.status(200).json(proyectos);
     }
     async GetById(req, res) {
@@ -33,5 +38,8 @@ export class ProyectoController {
         }
         return res.status(200).json(proyecto);
     }
+}
+function foreach() {
+    throw new Error("Function not implemented.");
 }
 //# sourceMappingURL=proyecto.controller.js.map
