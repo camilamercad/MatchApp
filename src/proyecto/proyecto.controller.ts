@@ -1,22 +1,14 @@
 import { Proyecto } from "./proyecto.entity.js";
 import { ProyectoRepository } from "./proyecto.repository.js";
 import { Request, Response } from 'express';
+import { SchemaType } from './proyecto.schemaFactory.js'
+import { validate, RequestPart } from './proyecto.validations.js'
 
 const proyectoRepository = new ProyectoRepository();
 
 export class ProyectoController {
     async Add(req: Request, res: Response): Promise<any> {
-        const input = req.body;
-
-        if (!input.titulo) {
-            throw new Error("Titulo es un campo obligatorio");
-        }
-        if (!input.descripcion) {
-            throw new Error("Descripcion es un campo obligatorio");
-        }
-        if (!input.usuario) {
-            throw new Error("Usuario es un campo obligatorio");
-        }
+        const input = validate(req, res, SchemaType.Add, RequestPart.body);
 
         const proyecto = new Proyecto(input.titulo, input.descripcion, input.usuario, input?.descripcionDetallada, undefined, input?.idCategoria, input?.imagen);
 
@@ -25,22 +17,14 @@ export class ProyectoController {
     }
 
     async GetAll(req: Request, res: Response): Promise<any> {
-        for(const key of Object.keys(req.query)) {
-            if(key !== "titulo" && key !== "descripcion" && key !== "usuario" && key !== "idCategoria" && key !== "ordenarPorFecha") {
-                throw new Error(`El campo '${key}' no es válido para la búsqueda`);
-            }
-        }
+        const request = validate(req, res, SchemaType.GetAll, RequestPart.query);
 
-        const { titulo, descripcion, usuario, idCategoria, ordenarPorFecha} = req.query;
-        const proyectos = await proyectoRepository.GetAll(titulo as string, descripcion as string, usuario as string, idCategoria as string, ordenarPorFecha as string);
+        const proyectos = await proyectoRepository.GetAll(request?.titulo as string, request?.descripcion as string, request?.usuario as string, request?.idCategoria as string, request?.ordenarPorFecha as string);
         return res.status(200).json(proyectos);
     }
 
     async GetById(req: Request, res: Response): Promise<any> {
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) {
-            throw new Error("El ID debe ser un número");
-        }
+        const id = parseInt(validate(req, res, SchemaType.GetById, RequestPart.params).id);
 
         const proyecto = await proyectoRepository.GetById(id);
         if (!proyecto) {
@@ -48,8 +32,4 @@ export class ProyectoController {
         }
         return res.status(200).json(proyecto);
     }
-}
-
-function foreach() {
-    throw new Error("Function not implemented.");
 }
