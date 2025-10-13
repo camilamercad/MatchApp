@@ -4,10 +4,8 @@ CREATE TABLE IF NOT EXISTS Proyecto (
     Titulo VARCHAR(50) NOT NULL,
     Descripcion VARCHAR(255) NULL,
     DescripcionDetallada VARCHAR(500) NULL,
-    Usuario VARCHAR(50) NOT NULL,
+    IdUsuario INT REFERENCES Usuarios(Id) NOT NULL,
     IdCategoria INT REFERENCES Categorias(Id),
     FechaCreacion TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     Imagen VARCHAR(255) NULL
 );
-
-ALTER TABLE Proyecto ADD Imagen VARCHAR(255) NULL;
