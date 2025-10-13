@@ -36,7 +36,7 @@ export class ProyectoRepository implements IProyectoRepository{
             const conditions = [];
 
             if (titulo) {
-                conditions.push(`Titulo ILIKE '%${titulo}%`);
+                conditions.push(`Titulo ILIKE '%${titulo}%'`);
             }
             if (descripcion) {
                 conditions.push(`Descripcion ILIKE '%${descripcion}%'`);
@@ -45,7 +45,7 @@ export class ProyectoRepository implements IProyectoRepository{
                 conditions.push(`Usuario = '${usuario}'`);
             }
             if (idCategoria) {
-                conditions.push(`IdCategoria = ${idCategoria}`);
+                conditions.push(`IdCategoria = '${idCategoria}'`);
             }
 
             query += conditions.join(' AND ');
