@@ -17,21 +17,21 @@ export class ProyectoRepository implements IProyectoRepository{
 
     public async Add(proyecto: Proyecto): Promise<void> {
         await client.query(
-        'INSERT INTO Proyecto (Titulo, Descripcion, Usuario, DescripcionDetallada, IdCategoria, Imagen) VALUES ($1, $2, $3, $4, $5, $6)',
+        'INSERT INTO Proyecto (Titulo, Descripcion, IdUsuario, DescripcionDetallada, IdCategoria, Imagen) VALUES ($1, $2, $3, $4, $5, $6)',
         [
             proyecto.Titulo,
             proyecto.Descripcion,
-            proyecto.Usuario,
+            proyecto.IdUsuario,
             proyecto.DescripcionDetallada ?? null,
             proyecto.IdCategoria ?? null,
             proyecto.Imagen ?? null
         ]);
     }
 
-    public async GetAll(titulo: string, descripcion: string, usuario: string, idCategoria: string, ordenarPorFecha: string): Promise<Proyecto[]> {
-        var query = 'SELECT Titulo, Descripcion, Usuario, FechaCreacion, IdCategoria, Imagen FROM Proyecto';
+    public async GetAll(titulo: string, descripcion: string, idUsuario: number, idCategoria: string, ordenarPorFecha: string): Promise<Proyecto[]> {
+        var query = 'SELECT Titulo, Descripcion, IdUsuario, FechaCreacion, IdCategoria, Imagen FROM Proyecto';
         
-        if(titulo || descripcion || usuario || idCategoria) {
+        if(titulo || descripcion || idUsuario || idCategoria) {
             query += ` WHERE `;
             const conditions = [];
 
@@ -41,8 +41,8 @@ export class ProyectoRepository implements IProyectoRepository{
             if (descripcion) {
                 conditions.push(`Descripcion ILIKE '%${descripcion}%'`);
             }
-            if (usuario) {
-                conditions.push(`Usuario = '${usuario}'`);
+            if (idUsuario) {
+                conditions.push(`IdUsuario = ${idUsuario}`);
             }
             if (idCategoria) {
                 conditions.push(`IdCategoria = '${idCategoria}'`);
@@ -58,7 +58,7 @@ export class ProyectoRepository implements IProyectoRepository{
         }
 
         const result = await client.query(query);
-        return result.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.usuario, undefined, row.fechacreacion, row.idcategoria, row.imagen));
+        return result.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.idUsuario, undefined, row.fechacreacion, row.idcategoria, row.imagen));
     }
 
     async GetById(id: number): Promise<Proyecto | null>{
@@ -68,6 +68,24 @@ export class ProyectoRepository implements IProyectoRepository{
             return null;
         }
 
-        return response.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.usuario, row.descripciondetallada, row.fechacreacion, row.idcategoria, row.imagen))[0];
+        return response.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.idUsuario, row.descripciondetallada, row.fechacreacion, row.idcategoria, row.imagen))[0];
     }
+
+    async DeleteById(id: number): Promise<void>{
+        await client.query('DELETE FROM Proyecto WHERE Id = $1', [id]);
+    }
+
+    async UpdateById(id: number, proyecto: Proyecto): Promise<void>{
+        await client.query('UPDATE Proyecto SET Titulo = $1, Descripcion = $2, IdUsuario = $3, DescripcionDetallada = $4, IdCategoria = $5, Imagen = $6 WHERE Id = $7', 
+        [
+            proyecto.Titulo,
+            proyecto.Descripcion,
+            proyecto.IdUsuario,
+            proyecto.DescripcionDetallada ?? null,
+            proyecto.IdCategoria ?? null,
+            proyecto.Imagen ?? null,
+            id
+        ]);
+    }
+            
 }
