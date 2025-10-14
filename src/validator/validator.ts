@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { SchemaType, SchemaFactory } from './proyecto.schemaFactory.js'
+import { SchemaType, SchemaFactory } from './validator.schemaFactory.js'
 
 export function validate(req: any, res: any, schema: SchemaType, tipo: RequestPart){
     const {error, value} = SchemaFactory.getSchema(schema).validate(req[RequestPart[tipo]], { abortEarly: false });

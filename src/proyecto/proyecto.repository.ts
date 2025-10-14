@@ -77,15 +77,15 @@ export class ProyectoRepository implements IProyectoRepository{
 
     async UpdateById(id: number, proyecto: Proyecto): Promise<void>{
         await client.query('UPDATE Proyecto SET Titulo = $1, Descripcion = $2, IdUsuario = $3, DescripcionDetallada = $4, IdCategoria = $5, Imagen = $6 WHERE Id = $7', 
-            [
-                proyecto.Titulo,
-                proyecto.Descripcion,
-                proyecto.IdUsuario,
-                proyecto.DescripcionDetallada ?? null,
-                proyecto.IdCategoria ?? null,
-                proyecto.Imagen ?? null,
-                id
-            ]);
+        [
+            proyecto.Titulo,
+            proyecto.Descripcion,
+            proyecto.IdUsuario,
+            proyecto.DescripcionDetallada ?? null,
+            proyecto.IdCategoria ?? null,
+            proyecto.Imagen ?? null,
+            id
+        ]);
     }
             
 }
