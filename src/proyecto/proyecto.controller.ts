@@ -1,8 +1,8 @@
 import { Proyecto } from "./proyecto.entity.js";
 import { ProyectoRepository } from "./proyecto.repository.js";
 import { Request, Response } from 'express';
-import { SchemaType } from './proyecto.schemaFactory.js'
-import { validate, RequestPart } from './proyecto.validations.js'
+import { SchemaType } from '../validator/validator.schemaFactory.js'
+import { validate, RequestPart } from '../validator/validator.js'
 
 const proyectoRepository = new ProyectoRepository();
 
@@ -27,6 +27,7 @@ export class ProyectoController {
         const id = parseInt(validate(req, res, SchemaType.Id, RequestPart.params).id);
 
         const proyecto = await proyectoRepository.GetById(id);
+
         if (!proyecto) {
             return res.status(404).send("Proyecto no encontrado");
         }

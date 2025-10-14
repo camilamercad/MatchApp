@@ -13,6 +13,16 @@ export class SchemaFactory {
           imagen: Joi.string().uri().optional()
         });
 
+        case SchemaType.Usuario:
+          return Joi.object({
+            nombre: Joi.string().min(1).max(20).required(),
+            email: Joi.string().email().max(50).required(),
+            fechaDeNacimiento: Joi.date().less('now').required(),
+            descripcion: Joi.string().max(255).optional(),
+            telefono: Joi.number().integer().min(1000000).max(9999999999).optional(),
+            genero: Joi.boolean().optional()
+          });
+
       case SchemaType.Filtros:
         return Joi.object({
           titulo: Joi.string().optional(),
@@ -35,6 +45,7 @@ export class SchemaFactory {
 
 export enum SchemaType {
     Proyecto = "proyecto",
+    Usuario = "usuario",
     Filtros = "filtros",
     Id = "id",
 }  
