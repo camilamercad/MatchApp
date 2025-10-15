@@ -8,9 +8,11 @@ const proyectoRepository = new ProyectoRepository();
 
 export class ProyectoController {
     async Add(req: Request, res: Response): Promise<any> {
-        const input = validate(req, res, SchemaType.Proyecto, RequestPart.body);
+        const input = validate(req, res, SchemaType.ProyectoAdd, RequestPart.body);
 
-        const proyecto = new Proyecto(input.titulo, input.descripcion, input.idUsuario, input?.descripcionDetallada, undefined, input?.idCategoria, input?.imagen);
+        console.log(input);
+
+        const proyecto = new Proyecto(input.Titulo, input.Descripcion, input.IdUsuario, input?.DescripcionDetallada, undefined, input?.IdCategoria, input?.Imagen);
 
         await proyectoRepository.Add(proyecto);
         return res.status(201).send();
@@ -19,12 +21,12 @@ export class ProyectoController {
     async GetAll(req: Request, res: Response): Promise<any> {
         const request = validate(req, res, SchemaType.Filtros, RequestPart.query);
 
-        const proyectos = await proyectoRepository.GetAll(request?.titulo as string, request?.descripcion as string, request?.idUsuario as number, request?.idCategoria as string, request?.ordenarPorFecha as string);
+        const proyectos = await proyectoRepository.GetAll(request?.Titulo as string, request?.Descripcion as string, request?.IdUsuario as number, request?.IdCategoria as string, request?.OrdenarPorFecha as string);
         return res.status(200).json(proyectos);
     }
 
     async GetById(req: Request, res: Response): Promise<any> {
-        const id = parseInt(validate(req, res, SchemaType.Id, RequestPart.params).id);
+        const id = parseInt(validate(req, res, SchemaType.Id, RequestPart.params).Id);
 
         const proyecto = await proyectoRepository.GetById(id);
 
@@ -35,16 +37,18 @@ export class ProyectoController {
     }
 
     async DeleteById(req: Request, res: Response): Promise<any> {
-        const id = parseInt(validate(req, res, SchemaType.Id, RequestPart.params).id);
+        const id = parseInt(validate(req, res, SchemaType.Id, RequestPart.params).Id);
         await proyectoRepository.DeleteById(id);
         return res.status(204).send();
     }
 
     async UpdateById(req: Request, res: Response): Promise<any> {
-        const id = parseInt(validate(req, res, SchemaType.Id, RequestPart.params).id);
-        const input = validate(req, res, SchemaType.Proyecto, RequestPart.body);
+        const id = parseInt(validate(req, res, SchemaType.Id, RequestPart.params).Id);
+        const input = validate(req, res, SchemaType.ProyectoUpdate, RequestPart.body);
 
-        const proyecto = new Proyecto(input.titulo, input.descripcion, input.idUsuario, input?.descripcionDetallada, undefined, input?.idCategoria, input?.imagen);
+        console.log(input);
+
+        const proyecto = new Proyecto(input.Titulo, input.Descripcion, undefined, input?.DescripcionDetallada, undefined, input?.IdCategoria, input?.Imagen);
         
         await proyectoRepository.UpdateById(id, proyecto);
         return res.status(204).send();
