@@ -1,6 +1,6 @@
 import { Client } from "pg";
-import { IUsuarioRepository } from "./usuarios.repository.interface";
-import { Usuario } from "./usuario.entity";
+import { IUsuarioRepository } from "./usuario.repository.interface.js";
+import { Usuario } from "./usuario.entity.js";
 
 const client = new Client({
     user: 'postgres',
@@ -15,20 +15,33 @@ export class UsuarioRepository implements IUsuarioRepository{
         client.connect();
     }
 
-    async Add(usuario: Usuario): Promise<void> {
-        var result = await client.query(
-        'INSERT INTO Usuarios (Nombre, Email, FechaDeNacimiento, Descripcion, Telefono, Genero) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (Nombre, Email) DO NOTHING',
-        [
-            usuario.Nombre,
-            usuario.Email,
-            usuario.FechaDeNacimiento,
-            usuario.Descripcion ?? null,
-            usuario.Telefono ?? null,
-            usuario.Genero ?? null
-        ]);
+    async Add(usuario: Usuario): Promise<number> {
+        try{
+            await client.query(
+                'INSERT INTO Usuarios (Nombre, Email, FechaDeNacimiento, Descripcion, Telefono, Genero) VALUES ($1, $2, $3, $4, $5, $6)',
+                [
+                    usuario.Nombre,
+                    usuario.Email,
+                    usuario.FechaDeNacimiento,
+                    usuario.Descripcion ?? null,
+                    usuario.Telefono ?? null,
+                    usuario.Genero ?? null
+                ]);
 
-        if (result.rowCount === 0) {
-            throw new Error('El nombre o el email ya están en uso.');
+            return 1;
+        }
+        catch (error: any) {
+            if (error.code === '23505') {
+                if (error.constraint === 'usuarios_nombre_key') {
+                    return 2;
+                } else if (error.constraint === 'usuarios_email_key') {
+                    return 3;
+                } else {
+                    return 4;
+                }
+            } else {
+                throw error;
+            }
         }
     }
 
