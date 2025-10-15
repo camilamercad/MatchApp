@@ -7,6 +7,6 @@ const proyectoController = new ProyectoController();
 
 proyectoRouter.post("/", proyectoController.Add);
 proyectoRouter.get("/", proyectoController.GetAll);
-proyectoRouter.get("/:id", proyectoController.GetById);
-proyectoRouter.delete("/:id", proyectoController.DeleteById);
-proyectoRouter.put("/:id", proyectoController.UpdateById);
+proyectoRouter.get("/:Id", proyectoController.GetById);
+proyectoRouter.delete("/:Id", proyectoController.DeleteById);
+proyectoRouter.put("/:Id", proyectoController.UpdateById);

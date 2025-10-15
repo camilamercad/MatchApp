@@ -4,6 +4,6 @@ CREATE TABLE Usuarios (
     Email VARCHAR(50) NOT NULL UNIQUE,
     FechaDeNacimiento DATE NOT NULL,
     Descripcion VARCHAR(255) NULL,
-    Telefono INTEGER NULL,
+    Telefono BIGINT NULL,
     Genero BOOLEAN NULL
 );

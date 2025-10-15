@@ -58,7 +58,7 @@ export class ProyectoRepository implements IProyectoRepository{
         }
 
         const result = await client.query(query);
-        return result.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.idUsuario, undefined, row.fechacreacion, row.idcategoria, row.imagen));
+        return result.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.idusuario, undefined, row.fechacreacion, row.idcategoria, row.imagen));
     }
 
     async GetById(id: number): Promise<Proyecto | null>{
@@ -68,7 +68,7 @@ export class ProyectoRepository implements IProyectoRepository{
             return null;
         }
 
-        return response.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.idUsuario, row.descripciondetallada, row.fechacreacion, row.idcategoria, row.imagen))[0];
+        return response.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.idusuario, row.descripciondetallada, row.fechacreacion, row.idcategoria, row.imagen))[0];
     }
 
     async DeleteById(id: number): Promise<void>{
@@ -76,11 +76,10 @@ export class ProyectoRepository implements IProyectoRepository{
     }
 
     async UpdateById(id: number, proyecto: Proyecto): Promise<void>{
-        await client.query('UPDATE Proyecto SET Titulo = $1, Descripcion = $2, IdUsuario = $3, DescripcionDetallada = $4, IdCategoria = $5, Imagen = $6 WHERE Id = $7', 
+        await client.query('UPDATE Proyecto SET Titulo = $1, Descripcion = $2, DescripcionDetallada = $3, IdCategoria = $4, Imagen = $5 WHERE Id = $6', 
         [
             proyecto.Titulo,
             proyecto.Descripcion,
-            proyecto.IdUsuario,
             proyecto.DescripcionDetallada ?? null,
             proyecto.IdCategoria ?? null,
             proyecto.Imagen ?? null,
