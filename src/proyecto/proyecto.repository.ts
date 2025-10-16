@@ -2,21 +2,29 @@ import { Client } from "pg";
 import { IProyectoRepository } from "./proyecto.repository.interface.js";
 import { Proyecto } from "./proyecto.entity.js";
 
-const client = new Client({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'MatchApp',
-    password: 'postgres',
-    port: 5432,
-})
+export class ProyectoRepository implements IProyectoRepository {
+  private client: Client;
+  private readonly ownsClient: boolean;
 
-export class ProyectoRepository implements IProyectoRepository{
-    constructor() {
-        client.connect();
+  constructor(client?: Client) {
+    this.ownsClient = !client;
+    this.client =
+      client ??
+      new Client({
+        user: "postgres",
+        host: "localhost",
+        database: "MatchApp",
+        password: "postgres",
+        port: 5432,
+      });
+
+    if (this.ownsClient) {
+      void this.client.connect();
     }
+  }
 
     public async Add(proyecto: Proyecto): Promise<void> {
-        await client.query(
+        await this.client.query(
         'INSERT INTO Proyecto (Titulo, Descripcion, IdUsuario, DescripcionDetallada, IdCategoria, Imagen) VALUES ($1, $2, $3, $4, $5, $6)',
         [
             proyecto.Titulo,
@@ -28,7 +36,7 @@ export class ProyectoRepository implements IProyectoRepository{
         ]);
     }
 
-    public async GetAll(titulo: string, descripcion: string, idUsuario: number, idCategoria: string, ordenarPorFecha: string): Promise<Proyecto[]> {
+    public async GetAll(titulo?: string, descripcion?: string, idUsuario?: number, idCategoria?: string, ordenarPorFecha?: string): Promise<Proyecto[]> {
         var query = 'SELECT Titulo, Descripcion, IdUsuario, FechaCreacion, IdCategoria, Imagen FROM Proyecto';
         
         if(titulo || descripcion || idUsuario || idCategoria) {
@@ -57,12 +65,12 @@ export class ProyectoRepository implements IProyectoRepository{
             query += ' ORDER BY FechaCreacion ASC';
         }
 
-        const result = await client.query(query);
+        const result = await this.client.query(query);
         return result.rows.map(row => new Proyecto(row.titulo, row.descripcion, row.idusuario, undefined, row.fechacreacion, row.idcategoria, row.imagen));
     }
 
     async GetById(id: number): Promise<Proyecto | null>{
-        const response = await client.query('SELECT * FROM Proyecto WHERE Id = $1', [id]);
+        const response = await this.client.query('SELECT * FROM Proyecto WHERE Id = $1', [id]);
 
         if(response.rowCount === 0){
             return null;
@@ -72,11 +80,11 @@ export class ProyectoRepository implements IProyectoRepository{
     }
 
     async DeleteById(id: number): Promise<void>{
-        await client.query('DELETE FROM Proyecto WHERE Id = $1', [id]);
+        await this.client.query('DELETE FROM Proyecto WHERE Id = $1', [id]);
     }
 
     async UpdateById(id: number, proyecto: Proyecto): Promise<void>{
-        await client.query('UPDATE Proyecto SET Titulo = $1, Descripcion = $2, DescripcionDetallada = $3, IdCategoria = $4, Imagen = $5 WHERE Id = $6', 
+        await this.client.query('UPDATE Proyecto SET Titulo = $1, Descripcion = $2, DescripcionDetallada = $3, IdCategoria = $4, Imagen = $5 WHERE Id = $6', 
         [
             proyecto.Titulo,
             proyecto.Descripcion,
